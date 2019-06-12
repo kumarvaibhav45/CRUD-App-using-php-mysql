@@ -46,7 +46,7 @@ if (isset($_POST['email']) && isset($_POST['pass'])) {
 <html>
 
 <head>
-    <title>Kumar Vaibhav--Auto Database</title>
+    <title>Auto Database</title>
     <link rel="stylesheet" href="css\bootstrap.min.css">
     <style>
         .container {
