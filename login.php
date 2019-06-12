@@ -1,37 +1,39 @@
 <?php
 
+session_start();
+
 if (isset($_POST['cancel'])) {
     // Redirect the browser to index.php
     header("Location: index.php");
     return;
 }
-session_start();
+
 $salt = 'XyZzy12*_';
 $stored_hash = 'a8609e8d62c043243c4e201cbb342862'; //password: meow123
 
 // Check to see if we have some POST data, if we do process it
-if (isset($_POST['who']) && isset($_POST['pass'])) {
-    unset($_SESSION['who']);
-    if (strlen($_POST['who']) < 1 || strlen($_POST['pass']) < 1) {
+if (isset($_POST['email']) && isset($_POST['pass'])) {
+    unset($_SESSION['email']);
+    if (strlen($_POST['email']) < 1 || strlen($_POST['pass']) < 1) {
         $_SESSION['error'] = "Email and password are required";
         header("Location: login.php");
         return;
-    } elseif (!preg_match("/@/", $_POST['who'])) {
-        $_SESSION['error'] = "Email format invalid. Must contain '@'";
+    } elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error'] = "Email format invalid";
         header("Location: login.php");
         return;
     } else {
         $check = hash('md5', $salt . $_POST['pass']);
         if ($check == $stored_hash) {
-            $_SESSION['name'] = $_POST['who'];
+            $_SESSION['name'] = $_POST['email'];
             $_SESSION['success'] = "Logged In";
-            error_log("Login success " . $_POST['who']);
+            error_log("Login success " . $_POST['email']);
 
             // Redirect the browser to view.php
             header("Location: view.php");
             return;
         } else {
-            error_log("Login fail " . $_POST['who'] . " $check");
+            error_log("Login fail " . $_POST['email'] . " $check");
             $_SESSION['error'] = "Incorrect Password";
             header("Location: login.php");
             return;
@@ -39,6 +41,7 @@ if (isset($_POST['who']) && isset($_POST['pass'])) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 
@@ -69,19 +72,21 @@ if (isset($_POST['who']) && isset($_POST['pass'])) {
             ?>
             <form method="POST" class="py-5">
                 <div class="form-group">
-                    <label for="who">Email</label>
-                    <input class="form-control" type="text" name="who" id="who"><br />
+                    <label for="email">Email</label>
+                    <input class="form-control" type="text" name="email" id="email"><br />
                 </div>
                 <div class="form-group">
-                    <label for="id_1723">Password</label>
-                    <input class="form-control" type="text" name="pass" id="id_1723"><br />
+                    <label for="pass">Password</label>
+                    <input class="form-control" type="password" name="pass" id="pass"><br />
                 </div>
 
                 <input class="btn btn-primary" type="submit" name="login" value="Log In">
-                <input class="btn btn-danger" type="submit" name="cancel" value="Cancel">
+                <input class="btn btn-secondary" type="submit" name="cancel" value="Cancel">
             </form>
             <p>
             </p>
         <?php } ?>
     </div>
 </body>
+
+</html>
